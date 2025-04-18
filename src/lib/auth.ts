@@ -11,6 +11,7 @@ export const authConfig: NextAuthOptions = {
       name: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
+        phone: { label: "Phone", type: "phone" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
@@ -26,6 +27,12 @@ export const authConfig: NextAuthOptions = {
           throw new Error("User not found");
         }
 
+        const phone = await User.findOne({ phone: credentials.phone });
+
+        if (!phone) {
+          throw new Error("User's phone not found");
+        }
+
         const isPasswordMatch = await bcrypt.compare(
           credentials.password,
           user.password
@@ -38,6 +45,7 @@ export const authConfig: NextAuthOptions = {
         return {
           id: user._id.toString(),
           name: user.name,
+          phone: user.phone,
           email: user.email,
           image: user.image,
           role: user.role,

@@ -17,7 +17,7 @@ export async function register(values: z.infer<typeof registerSchema>) {
     return { error: validatedFields.error.errors[0].message };
   }
 
-  const { name, email, password, role } = validatedFields.data;
+  const { name, phone, email, password, role } = validatedFields.data;
   
   try {
     await connectDB();
@@ -36,6 +36,7 @@ export async function register(values: z.infer<typeof registerSchema>) {
     const newUser = await User.create({
       name,
       email,
+      phone,
       password: hashedPassword,
       role, // Include the role
     });

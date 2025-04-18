@@ -70,8 +70,8 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl">Нэвтрэх</CardTitle>
-        <CardDescription>Та нэвтрэх мэдээллээ оруулна уу </CardDescription>
+        <CardTitle className="text-2xl">Захиалга</CardTitle>
+        <CardDescription>Та захиалгын мэдээллээ оруулна уу </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">

@@ -64,6 +64,20 @@ export default async function AdminDashboardPage() {
 
           <Card>
             <CardHeader>
+              <CardTitle>Бараа</CardTitle>
+              <CardDescription>Бараа засварлах</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Link href="/admin/products">
+                <Button className="w-full">
+                  Бүх бараа
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>Хэрэглэгчийн хандалтруу буцах</CardTitle>
               <CardDescription>Буцах</CardDescription>
             </CardHeader>

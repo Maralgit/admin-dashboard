@@ -1,4 +1,4 @@
-// src/components/auth/register-form.tsx
+// src/components/auth/login-form.tsx
 "use client";
 
 import { useState } from "react";
@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,14 +18,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { loginSchema } from "@/lib/validation/auth";
 import Link from "next/link";
-import { registerSchema } from "@/lib/validation/auth";
-import { register as registerAction } from "@/lib/actions/auth-action";
 import { toast } from "sonner";
 
-type FormData = z.infer<typeof registerSchema>;
+type FormData = z.infer<typeof loginSchema>;
 
-export function RegisterForm() {
+export function LoginForm() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,13 +33,10 @@ export function RegisterForm() {
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(loginSchema),
     defaultValues: {
-      name: "",
       email: "",
-      phone: "",
       password: "",
-      role: "user",
     },
   });
 
@@ -47,17 +44,24 @@ export function RegisterForm() {
     try {
       setIsLoading(true);
 
-      const result = await registerAction(data);
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password,
+      });
 
-      if (result.error) {
-        toast("Error");
-
+      if (result?.error) {
+        toast("Нэвтрэх нэр эсвэл нууц үг буруу байна");
+        setIsLoading(false);
         return;
       }
-      toast("Success");
-      router.push("/login");
+
+      toast("Амжилттай нэвтэрлээ");
+
+      router.push("/dashboard");
+      router.refresh();
     } catch (error) {
-      toast("Error");
+      toast("Алдаа");
     } finally {
       setIsLoading(false);
     }
@@ -66,42 +70,21 @@ export function RegisterForm() {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl">Бүртгүүлэх</CardTitle>
-        <CardDescription>Шинэ хэрэглэгч үүсгэх</CardDescription>
+        <CardTitle className="text-2xl">Нэвтрэх</CardTitle>
+        <CardDescription>Та нэвтрэх мэдээллээ оруулна уу </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="name">Нэр</Label>
-            <Input id="name" placeholder="Батаа" {...register("name")} />
-            {errors.name && (
-              <p className="text-sm text-red-500">{errors.name.message}</p>
-            )}
-          </div>
-
           <div className="space-y-2">
             <Label htmlFor="email">И-мэйл хаяг</Label>
             <Input
               id="email"
               type="email"
-              placeholder="bataa@example.mn"
+              placeholder="admin@example.mn"
               {...register("email")}
             />
             {errors.email && (
               <p className="text-sm text-red-500">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone">Утасны дугаар</Label>
-            <Input
-              id="phone"
-              type="text"
-              placeholder="99887766"
-              {...register("phone")}
-            />
-            {errors.phone && (
-              <p className="text-sm text-red-500">{errors.phone.message}</p>
             )}
           </div>
 
@@ -119,15 +102,15 @@ export function RegisterForm() {
           </div>
 
           <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Register"}
+            {isLoading ? "Logging in..." : "Login"}
           </Button>
         </form>
       </CardContent>
       <CardFooter className="flex justify-center">
         <p className="text-sm text-center">
-          Танд бүртгэл байгаа юу?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline">
-            Нэвтрэх
+          Шинээрээ бүртгүүлэх үү?{" "}
+          <Link href="/register" className="text-blue-600 hover:underline">
+            Энд дарна уу
           </Link>
         </p>
       </CardFooter>

@@ -8,6 +8,7 @@ export type UserRole = 'user' | 'admin';
 interface IUser extends mongoose.Document {
   name: string;
   email: string;
+  phone: string;
   password: string;
   image?: string;
   role: UserRole;
@@ -23,10 +24,16 @@ const UserSchema = new mongoose.Schema<IUser>(
       required: [true, 'Please provide a name'],
       maxlength: [60, 'Name cannot be more than 60 characters'],
     },
+  
     email: {
       type: String,
       required: [true, 'Please provide an email'],
       unique: true,
+    },
+    phone: {
+      type: String,
+      required: [true, 'Please provide a phone'],
+      minlength: [8, 'Phone cannot be more than 8 characters'],
     },
     password: {
       type: String,

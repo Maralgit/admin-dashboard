@@ -94,7 +94,7 @@ const page = () => {
                 <div>
                   {product?.stock > 0 ? (
                     <>
-                      <Button onClick={() => {}}>Сагсанд нэмэх</Button>
+                      <Button onClick={() => {}}>Захиалах</Button>
                     </>
                   ) : (
                     <>
