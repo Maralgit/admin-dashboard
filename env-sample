@@ -1,3 +1,3 @@
-MONGODB_URI="url here"
+MONGODB_URI="mongodb+srv://admin:fnykxBoArDbP9979@cluster0.mett7.mongodb.net/ecommerce?retryWrites=true&w=majority"
 NEXTAUTH_SECRET="DokCVdWEbz7aH4PsYRw1MqGFkcC8OXst7plaxrUHUKw="
 NEXTAUTH_URL=http://localhost:3000
