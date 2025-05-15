@@ -13,7 +13,7 @@ import {
   getFilteredProducts,
 } from "@/lib/actions/product-action";
 import { IProduct } from "@/models/Product";
-import { ProductSkeleton } from "@/components/ProductSkeleton";
+import { ProductSkeleton } from "@/components/skeletons/ProductSkeleton";
 import { Button } from "@/components/ui/button";
 import { useRouter, useSearchParams } from "next/navigation";
 // type Products = Awaited<ReturnType<typeof getCachedProducts>>;

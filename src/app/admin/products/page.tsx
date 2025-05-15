@@ -87,7 +87,7 @@ export default async function AdminUsersPage() {
                   </td>
                   <td>
                     <p className="text-sm text-center">
-                      <Link href="/products" className="text-blue-600 hover:underline">
+                      <Link href={`/admin/products/${product._id}/edit`} className="text-blue-600 hover:underline">
                         Засварлах
                       </Link>
                     </p>
