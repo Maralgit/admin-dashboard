@@ -1,3 +1,4 @@
+//models/product
 import mongoose, { Schema, Model } from "mongoose";
 import '@/models/Category';
 

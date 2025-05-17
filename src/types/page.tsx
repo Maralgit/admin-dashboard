@@ -1,8 +1,3 @@
-export type ProductType = {
-    _id: string
-    title: string
-    description: string
-    price: number
-    stock: number
-    image: string
-  }
+import ProductModel from "@/models/Product";
+import { IProduct } from "@/models/Product";
+export type Product = IProduct;

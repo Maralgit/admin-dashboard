@@ -1,3 +1,4 @@
+//jishee
 "use client"
 
 import * as React from "react"
@@ -39,10 +40,12 @@ import { getServerSession } from "next-auth"
 import { authConfig } from "@/lib/auth"
 import { redirect } from "next/navigation";
 import { connectDB } from "@/lib/mongodb"
-import Product from "@/models/Product";
 import mongoose, { Schema, Model } from "mongoose";
 import Image from "next/image";
 import { Span } from "next/dist/trace"
+import { Types } from "mongoose"
+import ProductModel from "@/models/Product";
+import { IProduct } from "@/models/Product";
 
 const data: Payment[] = [
   {
@@ -91,17 +94,17 @@ export type Payment = {
 }
 
 export type Product = {
-  _id: { type: Number, required: true },
-  title: { type: String, required: true, unique: true },
-  description: { type: String, required: true },
-  price: { type: Number, required: true },
-  image: { type: String, required: false },
-  stock: { type: Number, required: true, default: 0 },
-  category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
-  brand: { type: mongoose.Schema.Types.ObjectId, ref: "Brand", required: true },
-}
+  _id: string | Types.ObjectId;
+  title: string;
+  description: string;
+  price: number;
+  image?: string;
+  stock: number;
+  category: string | Types.ObjectId;
+  brand: string | Types.ObjectId;
+};
 
-
+export type ProductType = IProduct;
 
 export const columns: ColumnDef<Product>[] = [
   {
@@ -194,6 +197,28 @@ export const columns: ColumnDef<Product>[] = [
     }
   },
   {
+    accessorKey: "brand",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Брэнд
+          <ArrowUpDown />
+        </Button>
+      )
+    },
+    cell: ({ row }) => (
+      <div className="capitalize">{row.getValue("title")}</div>
+    ),
+  },
+  {
+    accessorKey: "category",
+    header: () => <div className="text-right">Ангилал</div>,
+    cell: ({ row }) => <div className="lowercase">{row.getValue("category")}</div>,
+  },
+  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
@@ -215,8 +240,14 @@ export default async function DataTableDemo() {
   }
 
   await connectDB();
+  const productsData = await ProductModel.find({}).lean();
 
-  const products = await Product.find({}).lean();
+  const products: Product[] = productsData.map((product) => ({
+  ...product,
+  _id: product._id.toString(),
+  category: product.category.toString(),
+  brand: product.brand.toString(),
+}));
 
 
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -227,9 +258,9 @@ export default async function DataTableDemo() {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  const table = useReactTable({
-    products,
-    columns,
+  const table = useReactTable<Product>({
+    data: products,
+    columns: columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
