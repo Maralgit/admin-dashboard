@@ -77,6 +77,22 @@ export const columns: ColumnDef<Product>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+    {
+    accessorKey: "image",
+    header: () => <div className="text-left">Барааны зураг</div>,
+    cell: ({ row }) => {
+      const imageUrl = row.original.image;
+      return imageUrl ? (
+        <img
+          src={imageUrl}
+          alt="Product Image"
+          className="w-24 h-24 m-4"
+        />
+      ) : (
+        <span className="text-gray-400 italic"> No image </span>
+      )
+    },
+  },
   {
     accessorKey: "title",
     header: ({ column }) => {
@@ -85,7 +101,7 @@ export const columns: ColumnDef<Product>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Барааны нэр
+          БАРААНЫ НЭР
           <ArrowUpDown />
         </Button>
       )
@@ -96,12 +112,12 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "description",
-    header: () => <div className="text-right">Тайлбар</div>,
+    header: () => <div className="text-left">Тайлбар</div>,
     cell: ({ row }) => <div className="lowercase">{row.getValue("description")}</div>,
   },
   {
     accessorKey: "price",
-    header: () => <div className="text-right">Үнэ</div>,
+    header: () => <div className="text-left">Үнэ</div>,
     cell: ({ row }) => {
       const amount = parseFloat(row.getValue("price"))
 
@@ -115,32 +131,16 @@ export const columns: ColumnDef<Product>[] = [
     },
   },
   {
-    accessorKey: "image",
-    header: () => <div className="text-right">Барааны зураг</div>,
-    cell: ({ row }) => {
-      const imageUrl = row.original.image;
-      return imageUrl ? (
-        <img
-          src="{imageUrl}"
-          alt="Product Image"
-          className="w-16 h-16 object-cover rounded"
-        />
-      ) : (
-        <span className="text-gray-400 italic"> No image </span>
-      )
-    },
-  },
-  {
     accessorKey: "stock",
-    header: () => <div className="text-right">Үлдэгдэл</div>,
+    header: () => <div className="text-left">Үлдэгдэл</div>,
     cell: ({ row }) => {
       const value = row.getValue("stock") as number;
       return value <= 5 ?
         (
-          <span className="bg-red-100 text-red-800"> {value} </span>
+          <span className="bg-red-100 text-xl text-center text-red-800 rounded-lg p-1"> {value} </span>
         )
         : (
-          <span className="bg-purple-100 text-purple-800"> {value} </span>
+          <span className="bg-purple-100 text-xl text-center text-purple-800 rounded-lg p-1"> {value} </span>
         )
     }
   },
@@ -152,7 +152,7 @@ export const columns: ColumnDef<Product>[] = [
           variant="ghost"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
-          Брэнд
+          БРЭНД
           <ArrowUpDown />
         </Button>
       )
@@ -163,7 +163,7 @@ export const columns: ColumnDef<Product>[] = [
   },
   {
     accessorKey: "category",
-    header: () => <div className="text-right">Ангилал</div>,
+    header: () => <div className="text-left">Ангилал</div>,
     cell: ({ row }) => <div className="lowercase">{row.getValue("category")}</div>,
   },
   {
@@ -173,7 +173,7 @@ export const columns: ColumnDef<Product>[] = [
       const payment = row.original
 
       return (
-        <div><a href="edit"><Edit2 />Edit</a></div>
+        <div className="px-4 text-blue-600 hover:underline"><a href="edit"><Edit2 />Edit</a></div>
       )
     },
   },
@@ -210,13 +210,12 @@ export default function Jishee({products}: { products: Product[] }) {
   })
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-8">
-      <div className="flex py-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Бараа засварлах</h1>
-          <Link href="/admin/dashboard">
-            <Button variant="outline">Буцах</Button>
-          </Link>
+    <main className="flex min-h-screen flex-col p-4">
+        <div className="flex justify-between pb-8">
+            <h1 className="text-3xl font-bold">Бараа засварлах</h1>
+            <Link href="/admin/dashboard">
+              <Button variant="outline">Буцах</Button>
+            </Link>
         </div>
         <div className="flex items-center py-4">
           <Input
@@ -254,7 +253,6 @@ export default function Jishee({products}: { products: Product[] }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      </div>
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <Table>
           <TableHeader>
@@ -262,7 +260,7 @@ export default function Jishee({products}: { products: Product[] }) {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead className="bg-gray-50 text-left text-gray-500 uppercase" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
