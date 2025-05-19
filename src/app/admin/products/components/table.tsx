@@ -1,4 +1,4 @@
-//jishee/page.tsx
+//admin/products/page.tsx
 "use client"
 
 import * as React from "react"
@@ -40,6 +40,7 @@ import {
 import { Types } from "mongoose"
 import { IProduct } from "@/models/Product";
 import Link from "next/link";
+import { useRouter } from "next/navigation"
 
 export type Product = {
   _id: string | Types.ObjectId;
@@ -122,9 +123,10 @@ export const columns: ColumnDef<Product>[] = [
       const amount = parseFloat(row.getValue("price"))
 
       // Format the amount as a tugrik amount
-      const formatted = new Intl.NumberFormat("mn-MN", {
+      const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "MNT",
+        currencyDisplay: "code",
       }).format(amount)
 
       return <div className="text-right font-medium">{formatted}</div>
@@ -169,11 +171,22 @@ export const columns: ColumnDef<Product>[] = [
   {
     id: "actions",
     enableHiding: false,
+     header: () => <div className="text-right">Засварлах</div>,
     cell: ({ row }) => {
-      const payment = row.original
+      const router = useRouter()
+
+      const item = row.original
 
       return (
-        <div className="px-4 text-blue-600 hover:underline"><a href="edit"><Edit2 />Edit</a></div>
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push(`/products/${item._id}/edit`)}
+          >
+            <div className="px-4 text-blue-600 hover:underline"><Edit2 />Edit</div>
+          </Button>
+        </div>
       )
     },
   },

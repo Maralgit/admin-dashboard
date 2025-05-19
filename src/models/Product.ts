@@ -15,14 +15,14 @@ export interface IProduct {
 
 const ProductSchema = new Schema<IProduct>(
   {
-    _id: { type: Number, required: true },
+    _id: { type: Number, required: true},
     title: { type: String, required: true, unique: true },
     description: { type: String, required: true },
     price: { type: Number, required: true },
     image: { type: String, required: false },
     stock: { type: Number, required: true, default: 0 },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
-    brand: { type: mongoose.Schema.Types.ObjectId, ref: "Brand", required: true },
+    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category"},
+    brand: { type: mongoose.Schema.Types.ObjectId, ref: "Brand" },
   },
   {
     timestamps: true,

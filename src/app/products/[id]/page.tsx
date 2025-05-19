@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import { getProductById } from "@/lib/actions/product-action";
+import { getProductById } from "@/app/actions/product-action";
 import ProductPageClient from "./ProductPageClient";
 
 export async function generateMetadata({ params }: { params: { id: number } }) {

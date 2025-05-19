@@ -40,10 +40,13 @@ export default async function AdminUsersPage() {
                   И-мэйл хаяг
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Хэрэглэгчийн
+                  Хэрэглэгчийн эрх
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Үүсгэгдсэн
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Устгах
                 </th>
               </tr>
             </thead>
@@ -84,6 +87,14 @@ export default async function AdminUsersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(user.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <Link
+                      href={`/admin/users/${user._id}/delete`}
+                      className="text-red-600 hover:text-red-900 hover:underline"
+                    >
+                      Устгах
+                    </Link>
                   </td>
                 </tr>
               ))}

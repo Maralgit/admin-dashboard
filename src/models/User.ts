@@ -1,5 +1,5 @@
 // src/models/User.ts
-import mongoose from 'mongoose';
+import mongoose, { Schema, Model } from "mongoose";
 
 // Define possible user roles
 export type UserRole = 'user' | 'admin';
@@ -55,4 +55,6 @@ const UserSchema = new mongoose.Schema<IUser>(
 );
 
 // Using mongoose.models.User first prevents the error when model is redefined in development with hot reloading
-export default mongoose.models?.User || mongoose.model<IUser>('User', UserSchema);
+const User: Model<IUser> =
+  mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
+export default User;

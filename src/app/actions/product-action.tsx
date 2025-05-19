@@ -1,14 +1,17 @@
 //product-actions.tsx
 "use server"
 
+import { z } from "zod";
 import { connectDB } from "@/lib/mongodb";
 import { getServerSession } from "next-auth"
 import { authConfig } from "@/lib/auth"
 import { redirect } from "next/navigation";
 import { Types } from "mongoose"
 import ProductModel from "@/models/Product";
-import { IProduct } from "@/models/Product";
-
+import { revalidatePath, unstable_cache } from "next/cache";
+import CategoryModel from "@/models/Category";
+import BrandModel from "@/models/Brand";
+import { productSchema } from "@/lib/validation/product";
 
 export type Product = {
     _id: string | Types.ObjectId;
@@ -41,15 +44,189 @@ export const getProduct = async () => {
 
 }
 
-export const deleteProduct = async (productId: string) => {
+export async function getFilteredProducts(filters: any) {
+  await connectDB();
+
+  const { category,brand, minPrice, maxPrice, orderBy } = filters;
+  let query: any = {};
+
+  // Debugging the received filters
+  console.log("Received Filters:", filters);
+
+  // Filter by category
+  if (category) {
+    const categoryOne = await CategoryModel.findOne({ slug: category });
+    if (categoryOne) {
+      query.category = categoryOne._id; // Mongoose automatically converts to ObjectId
+      console.log("Category Found:", categoryOne);
+    } else {
+      console.log("No category found for slug:", category);
+    }
+  }
+
+  // Filter by brand
+  if (brand) {
+    const brandOne = await BrandModel.findOne({ slug: brand });
+    if (brandOne) {
+      query.brand = brandOne._id; // Mongoose automatically converts to ObjectId
+      console.log("Brand Found:", brandOne);
+    } else {
+      console.log("No brand found for slug:", brand);
+    }
+  }
+
+  // Filter by price range
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = Number(minPrice);
+    if (maxPrice) query.price.$lte = Number(maxPrice);
+  }
+
+  // Sorting logic
+  let sortQuery: any = {};
+  if (orderBy === "title_asc") sortQuery.title = 1;
+  if (orderBy === "title_desc") sortQuery.title = -1;
+  if (orderBy === "price_asc") sortQuery.price = 1;
+  if (orderBy === "price_desc") sortQuery.price = -1;
+
+  console.log("MongoDB Query:", query);
+
+  try {
+    const filteredProduct = await ProductModel.find(query)
+      .populate("category")
+      .sort(sortQuery);
+
+    // console.log("Filtered Products:", filteredProduct);
+
+    if (!filteredProduct || filteredProduct.length === 0) {
+      return [];
+    }
+    // revalidatePath("/products");
+    return JSON.stringify(filteredProduct);
+  } catch (error) {
+    throw new Error("Failed to fetch filtered products");
+  }
+}
+
+export const getCachedProducts = unstable_cache(
+  async (limit: number) => {
+    try {
+      await connectDB();
+      const products = await ProductModel.find({}).limit(limit);
+      return products;
+    } catch (error) {
+      throw new Error("Failed to fetch products");
+    }
+  },
+  ["products"],
+  { revalidate: 3600, tags:["products"] }
+);
+
+export async function getProductById(productId: Number) {
+  try {
     await connectDB();
-    const productsData = await ProductModel.deleteOne({ _id: productId });
-    if (productsData.deletedCount === 0) {
-        throw new Error("Product not found");
+    const product = await ProductModel.findById(productId);
+    if (!product) throw new Error("Product not found");
+    return product;
+  } catch (error) {
+    throw new Error("Failed to fetch product");
+  }
+}
+
+export async function checkProductCount(productId: Number) {
+  try {
+    await connectDB();
+    const product = await ProductModel.findById(productId);
+    if (!product) throw new Error("Product not found");
+    return product.stock;
+  } catch (error) {
+    throw new Error("Failed to fetch product");
+  }
+}
+
+// export async function checkExistingProduct(name: string) {
+//   try {
+//     await connectDB();
+//     return await ProductModel.findOne({ name });
+//   } catch (error) {
+//     throw new Error("Failed to check product existence");
+//   }
+// }
+
+export async function createProduct(values: z.infer<typeof productSchema>) {
+    
+    const validatedFields = productSchema.safeParse(values);
+      
+    if (!validatedFields.success) {
+        return { success: false, error: validatedFields.error.errors[0].message };
     }
 
-    return {success: true, message: "Product deleted successfully"};
+    const { image, title, desc, price, stock } = validatedFields.data
 
+    const session = await getServerSession(authConfig);
+    if (!session || session.user.role !== "admin") {
+        redirect("/unauthorized");
+    }
 
+  try {
+    await connectDB();
 
+    const existingProduct = await ProductModel.findOne({ title});
+    if (existingProduct) throw new Error("Product already exists");
+    
+    const newProduct = await ProductModel.create({
+      image,
+      title,
+      description: desc,
+      price,
+      stock
+    });
+    
+    // await newProduct.save();
+
+    // revalidatePath("/products");
+
+    return { success: "Product created successfully" };
+  } catch (error) {
+    console.error("Creation error:", error);
+    return { error: "Failed to create product" };
+  }
+}
+
+export async function updateProduct(
+  productId: string,
+  updateData: Partial<{ name: string; price: number; description: string }>
+) {
+  try {
+    await connectDB();
+    const updatedProduct = await ProductModel.findByIdAndUpdate(
+      productId,
+      updateData,
+      { new: true }
+    );
+
+    if (!updatedProduct) throw new Error("Product not found");
+
+    // Revalidate cache
+    revalidatePath("/products");
+
+    return updatedProduct;
+  } catch (error) {
+    throw new Error("Failed to update product");
+  }
+}
+
+export async function deleteProduct(productId: string) {
+  try {
+    await connectDB();
+    const deletedProduct = await ProductModel.findByIdAndDelete(productId);
+
+    if (!deletedProduct) throw new Error("Product not found");
+
+    revalidatePath("/products");
+
+    return deletedProduct;
+  } catch (error) {
+    throw new Error("Failed to delete product");
+  }
 }

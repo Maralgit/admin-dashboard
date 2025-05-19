@@ -11,7 +11,7 @@ import {
 import {
   getCachedProducts,
   getFilteredProducts,
-} from "@/lib/actions/product-action";
+} from "@/app/actions/product-action"; // Adjust the import path as necessary
 import { IProduct } from "@/models/Product";
 import { ProductSkeleton } from "@/components/skeletons/ProductSkeleton";
 import { Button } from "@/components/ui/button";
