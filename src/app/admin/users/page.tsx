@@ -6,6 +6,8 @@ import { connectDB } from "@/lib/mongodb";
 import User from "@/models/User";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import DeleteUserButton from ".//DeleteUserButton";
+
 
 export default async function AdminUsersPage() {
   const session = await getServerSession(authConfig);
@@ -89,12 +91,7 @@ export default async function AdminUsersPage() {
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <Link
-                      href={`/admin/users/${user._id}/delete`}
-                      className="text-red-600 hover:text-red-900 hover:underline"
-                    >
-                      Устгах
-                    </Link>
+                    <DeleteUserButton userId={user._id} />
                   </td>
                 </tr>
               ))}
