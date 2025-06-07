@@ -115,7 +115,7 @@ const page = () => {
 
 export default function ProductsPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense fallback={<div>Loading.....</div>}>
       <div>page</div>
     </Suspense>
   );
