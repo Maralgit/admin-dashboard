@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 type productType = IProduct;
 
 interface ProductPageClientProps {
-  product: NonNullable<IProduct>;
+  product: IProduct;
 }
 
 function ProductPageClient({ product }: ProductPageClientProps) {

@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { getProductById } from "@/lib/actions/product-action";
 import ProductPageClient from "./ProductPageClient";
 
-export async function generateMetadata({ params }: { params: { id: number } }) {
-  const product = await getProductById(params.id);
+export async function generateMetadata({ params }: { params: { id: string } }) {
+  const product = await getProductById(Number(params.id));
   if (!product) return;
 
   return {

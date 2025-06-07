@@ -85,8 +85,9 @@ export const getCachedProducts = unstable_cache(
   { revalidate: 3600, tags:["products"] }
 );
 
-export async function getProductById(productId: Number) {
+export async function getProductById(productId: string | number) {
   try {
+    
     await connectDB();
     const product = await ProductModel.findById(productId);
     if (!product) throw new Error("Product not found");
