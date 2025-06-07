@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -113,4 +113,10 @@ const page = () => {
   );
 };
 
-export default page;
+export default function ProductsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <div>page</div>
+    </Suspense>
+  );
+}

@@ -8,7 +8,7 @@ export const registerSchema = z.object({
   password: z.string().min(6, {
     message: "Зөв цахим шуудан орууна уу",
   }),
-  role: z.enum(["user", "admin"]).default("user"),
+  role: z.enum(["user", "admin"]),
 });
 
 export const loginSchema = z.object({

@@ -39,7 +39,7 @@ export function RegisterForm() {
       email: "",
       phone: "",
       password: "",
-      role: "user",
+      role: "user" ,
     },
   });
 
